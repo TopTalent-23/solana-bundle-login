@@ -38,7 +38,7 @@ export default function WalletConnection() {
 
   const openExplorer = () => {
     if (publicKey) {
-      window.open(`https://explorer.solana.com/address/${publicKey.toBase58()}?cluster=devnet`, '_blank');
+      window.open(`https://explorer.solana.com/address/${publicKey.toBase58()}`, '_blank');
     }
   };
 
@@ -112,7 +112,7 @@ export default function WalletConnection() {
                   </div>
                   {balance !== null && (
                     <div className="text-sm text-muted-foreground mt-1">
-                      ≈ ${(balance * 100).toFixed(2)} USD
+                      ≈ ${(balance * 95).toFixed(2)} USD
                     </div>
                   )}
                 </div>

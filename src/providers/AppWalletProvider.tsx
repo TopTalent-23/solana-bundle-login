@@ -19,11 +19,20 @@ export default function AppWalletProvider({
 }: {
   children: React.ReactNode;
 }) {
-  // Network configuration - Using Devnet for testing
-  const network = WalletAdapterNetwork.Devnet;
+  // Network configuration - Using Mainnet for production
+  const network = WalletAdapterNetwork.Mainnet;
   
-  // RPC endpoint
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+  // RPC endpoint - Using custom RPC if provided, otherwise fallback to public RPC
+  const endpoint = useMemo(() => {
+    // Check for custom RPC endpoint in environment variables
+    if (process.env.NEXT_PUBLIC_RPC_ENDPOINT) {
+      return process.env.NEXT_PUBLIC_RPC_ENDPOINT;
+    }
+    
+    // Fallback to public RPC (not recommended for production)
+    console.warn('Using public RPC endpoint. For better performance, set NEXT_PUBLIC_RPC_ENDPOINT in your .env.local file');
+    return clusterApiUrl(network);
+  }, [network]);
 
   // Wallet adapters configuration
   const wallets = useMemo(

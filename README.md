@@ -1,8 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Boost Legends Bundler Bot
 
-## Getting Started
+A production-ready Solana bundler UI with real wallet connection support for mainnet transactions.
 
-First, run the development server:
+## 🔥 Features
+
+- ✅ **Real Solana Wallet Connection** (Phantom, Solflare)
+- ✅ **Mainnet Ready** - Configured for production use
+- ✅ **Token Creation & Bundling** - Launch on PumpFun or LaunchLab
+- ✅ **Liquidity Management** - Bundle liquidity with initial purchases
+- ✅ **Multi-Wallet Management** - Create and manage multiple wallets
+- ✅ **Beautiful Dark UI** - Three unique themes
+
+## ⚡ Quick Start
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Configure RPC (Important for Production):**
+   Create a `.env.local` file:
+   ```env
+   NEXT_PUBLIC_RPC_ENDPOINT=https://mainnet.helius-rpc.com/?api-key=YOUR_API_KEY
+   ```
+   See [WALLET_SETUP.md](./WALLET_SETUP.md) for detailed configuration.
+
+3. **Run the development server:**
 
 ```bash
 npm run dev
@@ -16,9 +39,14 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔗 Wallet Connection
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This app uses **real Solana wallet connections on Mainnet**. Make sure you have:
+- Phantom or Solflare wallet browser extension installed
+- SOL in your wallet for transaction fees
+- A proper RPC endpoint configured for production use
+
+**Note**: This is NOT a demo - all transactions are real and will cost real SOL.
 
 ## Learn More
 

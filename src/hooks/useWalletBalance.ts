@@ -35,8 +35,8 @@ export function useWalletBalance() {
           decimals: 9,
           logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
           balance: solBalance.toFixed(4),
-          price: 100, // Mock price
-          value: solBalance * 100,
+          price: 95, // Approximate SOL price
+          value: solBalance * 95,
         };
 
         // TODO: Fetch other SPL tokens using getParsedTokenAccountsByOwner
