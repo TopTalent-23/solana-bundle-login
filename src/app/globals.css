@@ -1,0 +1,208 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Primary Colors */
+    --primary: 123 58 237; /* #7C3AED - Bright Purple */
+    --primary-foreground: 255 255 255;
+    
+    /* Secondary Colors */
+    --secondary: 20 184 166; /* #14B8A6 - Teal */
+    --secondary-foreground: 255 255 255;
+    
+    /* Status Colors */
+    --success: 16 185 129; /* #10B981 - Green */
+    --warning: 245 158 11; /* #F59E0B - Amber */
+    --error: 239 68 68; /* #EF4444 - Red */
+    
+    /* Neutral Colors */
+    --background: 249 250 251; /* Light Gray Background */
+    --foreground: 17 24 39; /* Dark Text */
+    --card: 255 255 255;
+    --card-foreground: 17 24 39;
+    --muted: 243 244 246;
+    --muted-foreground: 107 114 128;
+    --border: 229 231 235;
+    
+    /* Accent */
+    --accent: 99 102 241; /* Indigo accent */
+    --accent-foreground: 255 255 255;
+    
+    /* Radius */
+    --radius: 0.75rem;
+  }
+  
+  .dark {
+    --background: 17 24 39;
+    --foreground: 243 244 246;
+    --card: 31 41 55;
+    --card-foreground: 243 244 246;
+    --muted: 55 65 81;
+    --muted-foreground: 156 163 175;
+    --border: 75 85 99;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+@layer components {
+  /* Button Variants */
+  .btn {
+    @apply px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center justify-center gap-2 text-base;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl hover:-translate-y-0.5;
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+  }
+  
+  .btn-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground;
+  }
+  
+  /* Card Styles */
+  .card {
+    @apply bg-card rounded-2xl p-6 shadow-sm border border-border/50 transition-all duration-200;
+  }
+  
+  .card:hover {
+    @apply shadow-md -translate-y-0.5;
+  }
+  
+  /* Input Styles */
+  .input {
+    @apply w-full px-4 py-3 rounded-xl border-2 border-border bg-background focus:border-primary focus:outline-none transition-colors text-base;
+  }
+  
+  /* Tooltip */
+  .tooltip {
+    @apply absolute z-50 bg-gray-900 text-white text-sm px-3 py-2 rounded-lg shadow-lg;
+  }
+  
+  /* Animation Classes */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes gradient {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+  
+  /* Glass Effect */
+  .glass {
+    @apply bg-white/10 backdrop-blur-lg border border-white/20;
+  }
+  
+  /* Loading Animation */
+  .loading-dots {
+    @apply inline-flex items-center gap-1;
+  }
+  
+  .loading-dots span {
+    @apply w-2 h-2 bg-primary rounded-full animate-bounce;
+  }
+  
+  .loading-dots span:nth-child(2) {
+    animation-delay: 0.1s;
+  }
+  
+  .loading-dots span:nth-child(3) {
+    animation-delay: 0.2s;
+  }
+  
+  /* Success Animation */
+  .success-checkmark {
+    @apply w-16 h-16 relative;
+  }
+  
+  .success-checkmark::after {
+    content: '✓';
+    @apply absolute inset-0 flex items-center justify-center text-3xl text-success animate-bounce;
+  }
+}
+
+@layer utilities {
+  /* Custom Gradient Backgrounds */
+  .gradient-primary {
+    @apply bg-gradient-to-r from-primary to-accent;
+  }
+  
+  .gradient-secondary {
+    @apply bg-gradient-to-r from-secondary to-emerald-400;
+  }
+  
+  .gradient-mesh {
+    background-image: 
+      radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 52% 99%, hsla(354, 98%, 61%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 97% 21%, hsla(342, 98%, 61%, 0.15) 0px, transparent 50%),
+      radial-gradient(at 10% 29%, hsla(256, 96%, 67%, 0.15) 0px, transparent 50%);
+  }
+  
+  /* Text Gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent gradient-primary;
+  }
+  
+  /* Safe Area for Mobile */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Custom range slider styling */
+  input[type="range"].slider::-webkit-slider-track {
+    height: 8px;
+    border-radius: 4px;
+  }
+  
+  input[type="range"].slider::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+  }
+}
