@@ -3,6 +3,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Solana Wallet Adapter Modal Overrides */
+.wallet-adapter-modal-wrapper {
+  @apply !bg-black/80 backdrop-blur-sm;
+}
+
+.wallet-adapter-modal {
+  @apply !bg-card !border !border-border backdrop-blur-xl;
+}
+
+.wallet-adapter-modal-title {
+  @apply !text-foreground font-semibold;
+}
+
+.wallet-adapter-button {
+  @apply !bg-muted hover:!bg-muted/80 !border !border-border hover:!border-primary/50 transition-all duration-300;
+}
+
+.wallet-adapter-button-trigger {
+  @apply !bg-primary hover:!bg-primary/90 !text-primary-foreground;
+}
+
 @layer base {
   :root {
     /* Primary Colors */

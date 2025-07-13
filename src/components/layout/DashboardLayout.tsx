@@ -22,10 +22,8 @@ import {
   Users,
   Coins,
 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { useWalletStore } from '@/store';
-import { shortenAddress } from '@/utils/format';
 import Logo from '@/components/Logo';
+import WalletConnection from '@/components/wallet/WalletConnection';
 
 interface NavItem {
   href: string;
@@ -52,15 +50,6 @@ interface DashboardLayoutProps {
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { connected, address, connect, disconnect } = useWalletStore();
-
-  const handleConnect = async () => {
-    if (connected) {
-      disconnect();
-    } else {
-      await connect();
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -153,13 +142,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         <div className="flex flex-1 items-center justify-between">
           <Logo size="md" />
           
-          <Button
-            variant={connected ? 'outline' : 'primary'}
-            size="sm"
-            onClick={handleConnect}
-          >
-            {connected ? shortenAddress(address!) : 'Connect Wallet'}
-          </Button>
+          <WalletConnection />
         </div>
       </div>
 
@@ -268,12 +251,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               <HelpCircle className="w-5 h-5" />
             </button>
             
-            <Button
-              variant={connected ? 'outline' : 'primary'}
-              onClick={handleConnect}
-            >
-              {connected ? shortenAddress(address!) : 'Connect Wallet'}
-            </Button>
+            <WalletConnection />
           </div>
         </header>
 

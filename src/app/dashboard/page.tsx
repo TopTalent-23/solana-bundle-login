@@ -22,8 +22,10 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Tooltip } from '@/components/ui/Tooltip';
 import Logo from '@/components/Logo';
-import { useWalletStore, useUIStore, useLiquidityStore } from '@/store';
+import { useUIStore, useLiquidityStore } from '@/store';
 import { formatCurrency, formatTokenAmount, formatRelativeTime } from '@/utils/format';
+import { useWalletBalance } from '@/hooks/useWalletBalance';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -31,9 +33,11 @@ const fadeInUp = {
 };
 
 export default function DashboardPage() {
-  const { connected, tokens, balance, transactions } = useWalletStore();
+  const { connected, tokens, balance } = useWalletBalance();
   const { showTutorial, setShowTutorial } = useUIStore();
   const { positions } = useLiquidityStore();
+  const { setVisible } = useWalletModal();
+  const transactions: any[] = []; // Mock transactions for now
 
   const totalBalance = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
   const totalLiquidityValue = positions.reduce((sum, pos) => sum + parseFloat(pos.value), 0);
@@ -61,7 +65,7 @@ export default function DashboardPage() {
             <p className="text-muted-foreground mb-8">
               Connect your wallet to launch your token like a legend. Create liquidity and secure your supply before anyone else.
             </p>
-            <Button size="lg" onClick={() => useWalletStore.getState().connect()}>
+            <Button size="lg" onClick={() => setVisible(true)}>
               Connect Wallet to Get Started
             </Button>
           </motion.div>
