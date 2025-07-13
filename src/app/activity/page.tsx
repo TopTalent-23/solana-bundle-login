@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
@@ -78,7 +78,7 @@ export default function ActivityPage() {
       amount: '50',
       fee: '0.0005',
       signature: '4YmZt...',
-      details: 'SOL → USDC',
+      details: 'SOL ΓåÆ USDC',
     },
     {
       id: '3',
