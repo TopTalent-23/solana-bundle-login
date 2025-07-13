@@ -17,6 +17,7 @@ export default function WalletConnection() {
   const { addToast } = useUIStore();
   const [copied, setCopied] = useState(false);
   const [balance, setBalance] = useState<number | null>(null);
+  const [solPrice, setSolPrice] = useState<number | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
   const truncateAddress = (address: string) => {
@@ -42,21 +43,33 @@ export default function WalletConnection() {
     }
   };
 
-  // Fetch wallet balance
+  // Fetch wallet balance and SOL price
   useEffect(() => {
-    const getBalance = async () => {
+    const fetchWalletData = async () => {
       if (publicKey && connection) {
         try {
+          // Fetch balance
           const bal = await connection.getBalance(publicKey);
           setBalance(bal / LAMPORTS_PER_SOL);
+
+          // Fetch real-time SOL price
+          try {
+            const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+            if (priceResponse.ok) {
+              const priceData = await priceResponse.json();
+              setSolPrice(priceData.solana?.usd || null);
+            }
+          } catch (priceError) {
+            console.warn('Failed to fetch SOL price:', priceError);
+          }
         } catch (error) {
           console.error('Failed to get balance:', error);
         }
       }
     };
 
-    getBalance();
-    const interval = setInterval(getBalance, 10000); // Refresh every 10 seconds
+    fetchWalletData();
+    const interval = setInterval(fetchWalletData, 30000); // Refresh every 30 seconds
     return () => clearInterval(interval);
   }, [publicKey, connection]);
 
@@ -110,9 +123,10 @@ export default function WalletConnection() {
                   <div className="text-2xl font-bold">
                     {balance !== null ? `${balance.toFixed(4)} SOL` : 'Loading...'}
                   </div>
-                  {balance !== null && (
+                  {balance !== null && solPrice !== null && (
                     <div className="text-sm text-muted-foreground mt-1">
-                      ≈ ${(balance * 95).toFixed(2)} USD
+                      ≈ ${(balance * solPrice).toFixed(2)} USD
+                      <span className="text-xs ml-1">(${solPrice.toFixed(2)}/SOL)</span>
                     </div>
                   )}
                 </div>

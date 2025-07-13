@@ -62,13 +62,22 @@ export function useWalletBalance() {
       const heliusApiKey = getHeliusApiKey();
       
       try {
-        // Fetch SOL balance and price
+        // Fetch SOL balance
         const bal = await connection.getBalance(publicKey);
         const solBalance = bal / LAMPORTS_PER_SOL;
         setBalance(solBalance.toFixed(4));
 
-        // Default SOL price
-        let solPrice = 95;
+        // Fetch real-time SOL price
+        let solPrice = 95; // Default fallback price
+        try {
+          const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+          if (priceResponse.ok) {
+            const priceData = await priceResponse.json();
+            solPrice = priceData.solana?.usd || solPrice;
+          }
+        } catch (priceError) {
+          console.warn('Failed to fetch SOL price, using fallback:', priceError);
+        }
 
         // If we have Helius API key, fetch enhanced data
         if (heliusApiKey) {
