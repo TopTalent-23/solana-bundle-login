@@ -32,11 +32,12 @@ interface NavItem {
   label: string;
   icon: React.ElementType;
   highlight?: boolean;
+  disabled?: boolean;
 }
 
 const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/liquidity', label: 'Create Liquidity & Bundle', icon: Rocket, highlight: true },
+  { href: '/liquidity', label: 'Create Liquidity & Bundle (Coming Soon)', icon: Rocket, highlight: true, disabled: true },
   { href: '/token', label: 'Create Token & Bundle', icon: Coins, highlight: true },
   { href: '/manage-wallets', label: 'Manage Launch Wallets', icon: Users },
   { href: '/wallet', label: 'My Wallet', icon: Wallet },
@@ -78,28 +79,47 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                     const isActive = pathname === item.href;
                     return (
                       <li key={item.href}>
-                        <Link
-                          href={item.href}
-                          className={`
-                            group flex gap-x-3 rounded-lg p-3 text-sm font-medium leading-6
-                            transition-all duration-200 relative
-                            ${isActive 
-                              ? 'bg-primary text-primary-foreground shadow-lg' 
-                              : item.highlight
-                                ? 'text-foreground hover:text-primary-foreground hover:bg-primary/90 border border-primary/50 boost-border-gradient'
-                                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                            }
-                          `}
-                        >
-                          <item.icon className="h-5 w-5 shrink-0" />
-                          {item.label}
-                          {item.highlight && !isActive && (
-                            <Zap className="ml-auto h-4 w-4 text-secondary-400" />
-                          )}
-                          {isActive && (
-                            <ChevronRight className="ml-auto h-5 w-5" />
-                          )}
-                        </Link>
+                        {item.disabled ? (
+                          <div
+                            className={`
+                              group flex gap-x-3 rounded-lg p-3 text-sm font-medium leading-6
+                              transition-all duration-200 relative cursor-not-allowed opacity-50
+                              ${item.highlight
+                                ? 'text-foreground border border-primary/30 boost-border-gradient'
+                                : 'text-muted-foreground'
+                              }
+                            `}
+                          >
+                            <item.icon className="h-5 w-5 shrink-0" />
+                            {item.label}
+                            {item.highlight && (
+                              <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                            )}
+                          </div>
+                        ) : (
+                          <Link
+                            href={item.href}
+                            className={`
+                              group flex gap-x-3 rounded-lg p-3 text-sm font-medium leading-6
+                              transition-all duration-200 relative
+                              ${isActive 
+                                ? 'bg-primary text-primary-foreground shadow-lg' 
+                                : item.highlight
+                                  ? 'text-foreground hover:text-primary-foreground hover:bg-primary/90 border border-primary/50 boost-border-gradient'
+                                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                              }
+                            `}
+                          >
+                            <item.icon className="h-5 w-5 shrink-0" />
+                            {item.label}
+                            {item.highlight && !isActive && (
+                              <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                            )}
+                            {isActive && (
+                              <ChevronRight className="ml-auto h-5 w-5" />
+                            )}
+                          </Link>
+                        )}
                       </li>
                     );
                   })}
@@ -177,27 +197,47 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                 {navItems.map((item) => {
                   const isActive = pathname === item.href;
                   return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`
-                        flex items-center gap-x-3 rounded-lg p-3 text-sm font-medium
-                        transition-all duration-200 relative
-                        ${isActive 
-                          ? 'bg-primary text-primary-foreground shadow-lg' 
-                          : item.highlight
-                            ? 'text-foreground hover:text-primary-foreground hover:bg-primary/90 border border-primary/50 boost-border-gradient'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                        }
-                      `}
-                    >
-                      <item.icon className="h-5 w-5" />
-                      {item.label}
-                      {item.highlight && !isActive && (
-                        <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                    <div key={item.href}>
+                      {item.disabled ? (
+                        <div
+                          className={`
+                            flex items-center gap-x-3 rounded-lg p-3 text-sm font-medium
+                            transition-all duration-200 relative cursor-not-allowed opacity-50
+                            ${item.highlight
+                              ? 'text-foreground border border-primary/30 boost-border-gradient'
+                              : 'text-muted-foreground'
+                            }
+                          `}
+                        >
+                          <item.icon className="h-5 w-5" />
+                          {item.label}
+                          {item.highlight && (
+                            <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                          )}
+                        </div>
+                      ) : (
+                        <Link
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={`
+                            flex items-center gap-x-3 rounded-lg p-3 text-sm font-medium
+                            transition-all duration-200 relative
+                            ${isActive 
+                              ? 'bg-primary text-primary-foreground shadow-lg' 
+                              : item.highlight
+                                ? 'text-foreground hover:text-primary-foreground hover:bg-primary/90 border border-primary/50 boost-border-gradient'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                            }
+                          `}
+                        >
+                          <item.icon className="h-5 w-5" />
+                          {item.label}
+                          {item.highlight && !isActive && (
+                            <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                          )}
+                        </Link>
                       )}
-                    </Link>
+                    </div>
                   );
                 })}
                 
