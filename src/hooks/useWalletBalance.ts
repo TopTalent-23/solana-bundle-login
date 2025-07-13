@@ -42,7 +42,8 @@ export function useWalletBalance() {
   const [tokens, setTokens] = useState<Token[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Extract Helius API key from RPC endpoint
+  // Extract Helius API key from RPC endpoint URL
+  // This enables enhanced token metadata and balance fetching
   const getHeliusApiKey = () => {
     const endpoint = process.env.NEXT_PUBLIC_RPC_ENDPOINT || '';
     const match = endpoint.match(/api-key=([a-zA-Z0-9-]+)/);
