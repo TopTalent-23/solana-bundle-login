@@ -12,14 +12,16 @@ import {
   TrendingDown,
   Search,
   Filter,
+  Wallet,
 } from 'lucide-react';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { Tooltip } from '@/components/ui/Tooltip';
-import { useWalletStore } from '@/store';
+import { useWalletBalance } from '@/hooks/useWalletBalance';
 import { formatCurrency, formatTokenAmount, formatPercentage, shortenAddress } from '@/utils/format';
+import { useWallet } from '@solana/wallet-adapter-react';
+import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -27,9 +29,9 @@ const fadeInUp = {
 };
 
 export default function WalletPage() {
-  const { address, tokens, balance } = useWalletStore();
+  const { connected, tokens, balance, address, loading } = useWalletBalance();
+  const { setVisible } = useWalletModal();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showQR, setShowQR] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const totalBalance = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
@@ -46,6 +48,31 @@ export default function WalletPage() {
       setTimeout(() => setCopied(false), 2000);
     }
   };
+
+  if (!connected) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="text-center max-w-md"
+          >
+            <div className="mb-6">
+              <Wallet className="w-16 h-16 text-muted-foreground mx-auto" />
+            </div>
+            <h2 className="text-3xl font-bold font-heading mb-4">Connect Your Wallet</h2>
+            <p className="text-muted-foreground mb-8">
+              Connect your wallet to view your token balances and manage your assets.
+            </p>
+            <Button size="lg" onClick={() => setVisible(true)}>
+              Connect Wallet
+            </Button>
+          </motion.div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -152,7 +179,9 @@ export default function WalletPage() {
                 leftIcon={<Search className="w-4 h-4" />}
                 className="w-64"
               />
-              <Button variant="outline" icon={<Filter className="w-4 h-4" />} />
+              <Button variant="outline" icon={<Filter className="w-4 h-4" />}>
+                Filter
+              </Button>
             </div>
           </div>
 
