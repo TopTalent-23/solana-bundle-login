@@ -34,12 +34,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/dashboard', label: 'Dashboard', icon: Home },
-  { href: '/liquidity', label: 'Create Liquidity & Bundle (Coming Soon)', icon: Rocket, highlight: true, disabled: true },
-  { href: '/token', label: 'Create Token & Bundle', icon: Coins, highlight: true },
   { href: '/manage-wallets', label: 'Manage Launch Wallets', icon: Users },
-  { href: '/wallet', label: 'My Wallet', icon: Wallet },
-  { href: '/activity', label: 'Activity', icon: Activity },
+  { href: '/token', label: 'Create Token & Bundle', icon: Coins, highlight: true },
+  { href: '/projects', label: 'My Projects', icon: Package },
   { href: '/learn', label: 'Learn', icon: BookOpen },
 ];
 

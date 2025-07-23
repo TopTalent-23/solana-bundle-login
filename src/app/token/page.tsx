@@ -1,7 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import {
   Coins,
@@ -43,13 +44,14 @@ const fadeInUp = {
 export default function TokenPage() {
   const { tokens } = useWalletStore();
   const { addToast } = useUIStore();
+  const router = useRouter();
   
   // Token Creation State
   const [tokenName, setTokenName] = useState('');
   const [tokenSymbol, setTokenSymbol] = useState('');
   const [tokenDescription, setTokenDescription] = useState('');
-  const [tokenSupply, setTokenSupply] = useState('1000000000'); // 1 billion default
-  const [tokenImage, setTokenImage] = useState('');
+  const [tokenImageFile, setTokenImageFile] = useState<File | null>(null);
+  const [tokenImagePreview, setTokenImagePreview] = useState<string>('');
   const [websiteUrl, setWebsiteUrl] = useState('');
   const [twitterUrl, setTwitterUrl] = useState('');
   const [telegramUrl, setTelegramUrl] = useState('');
@@ -66,6 +68,101 @@ export default function TokenPage() {
   // Launch State
   const [isProcessing, setIsProcessing] = useState(false);
   const [launchComplete, setLaunchComplete] = useState(false);
+  const [currentTaskId, setCurrentTaskId] = useState<string | null>(null);
+  
+  // Progress tracking
+  const [currentStep, setCurrentStep] = useState(0);
+  const [progressStatus, setProgressStatus] = useState({
+    solDistribution: { status: 'pending', message: '' },
+    metadataUpload: { status: 'pending', message: '' },
+    bundlerSending: { status: 'pending', message: '' }
+  });
+
+  // Check for ongoing task on mount
+  useEffect(() => {
+    const savedTaskId = localStorage.getItem('pendingTokenCreation');
+    if (savedTaskId) {
+      setCurrentTaskId(savedTaskId);
+      setIsProcessing(true);
+      pollProgress(savedTaskId);
+    }
+  }, []);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setTokenImageFile(file);
+      
+      // Create preview URL
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTokenImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const pollProgress = async (taskId: string) => {
+    try {
+      const statusResponse = await fetch(`/api/token/status/${taskId}`);
+      const status = await statusResponse.json();
+      
+      // Update progress status
+      setProgressStatus(status.progress);
+      
+      // Update current step based on progress
+      if (status.progress.solDistribution.status === 'completed') {
+        setCurrentStep(2);
+      }
+      if (status.progress.metadataUpload.status === 'completed') {
+        setCurrentStep(3);
+      }
+      
+      // Check if all steps are completed
+      if (status.progress.bundlerSending.status === 'completed') {
+        setIsProcessing(false);
+        setCurrentStep(0);
+        
+        // Clear the saved task ID
+        localStorage.removeItem('pendingTokenCreation');
+        
+        // Store the completed task/project ID for the manage page
+        if (status.projectId) {
+          localStorage.setItem('lastCreatedProject', status.projectId);
+        }
+        
+        addToast({
+          type: 'success',
+          title: 'Token Created Successfully! 🚀',
+          description: 'Redirecting to manage your bundle...',
+        });
+        
+        // Redirect to bundler manage page
+        setTimeout(() => {
+          router.push(`/projects/${status.projectId || taskId}/manage`);
+        }, 1500);
+        
+      } else if (status.error) {
+        throw new Error(status.error);
+      } else {
+        // Continue polling
+        setTimeout(() => pollProgress(taskId), 1000);
+      }
+    } catch (error) {
+      console.error('Progress polling error:', error);
+      setIsProcessing(false);
+      setCurrentStep(0);
+      
+      // Clear the saved task ID on error
+      localStorage.removeItem('pendingTokenCreation');
+      
+      addToast({
+        type: 'error',
+        title: 'Creation Failed',
+        description: error instanceof Error ? error.message : 'An error occurred during token creation',
+      });
+    }
+  };
 
   const handleCreateTokenAndBuy = async () => {
     if (!tokenName || !tokenSymbol || !totalBuyAmount) {
@@ -78,18 +175,63 @@ export default function TokenPage() {
     }
 
     setIsProcessing(true);
+    setCurrentStep(1);
     
-    // Simulate processing
-    setTimeout(() => {
+    // Prepare form data
+    const formData = new FormData();
+    formData.append('tokenName', tokenName);
+    formData.append('tokenSymbol', tokenSymbol);
+    formData.append('tokenDescription', tokenDescription);
+    formData.append('platform', platform);
+    formData.append('walletCount', walletCount);
+    formData.append('totalBuyAmount', totalBuyAmount);
+    formData.append('distributionMode', distributionMode);
+    formData.append('minBuy', minBuy);
+    formData.append('maxBuy', maxBuy);
+    
+    if (tokenImageFile) {
+      formData.append('tokenImage', tokenImageFile);
+    }
+    
+    if (websiteUrl) formData.append('websiteUrl', websiteUrl);
+    if (twitterUrl) formData.append('twitterUrl', twitterUrl);
+    if (telegramUrl) formData.append('telegramUrl', telegramUrl);
+    
+    // Add wallet amounts for custom distribution
+    if (distributionMode === 'custom') {
+      formData.append('customAmounts', JSON.stringify(customAmounts));
+    }
+    
+    try {
+      // Start the create & bundle process
+      const response = await fetch('/api/token/create-bundle', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to start token creation');
+      }
+      
+      const { taskId } = await response.json();
+      
+      // Save task ID to localStorage for persistence
+      localStorage.setItem('pendingTokenCreation', taskId);
+      setCurrentTaskId(taskId);
+      
+      // Start polling
+      pollProgress(taskId);
+      
+    } catch (error) {
       setIsProcessing(false);
-      setLaunchComplete(true);
+      setCurrentStep(0);
       
       addToast({
-        type: 'success',
-        title: 'Token Created Successfully! 🚀',
-        description: `${tokenName} (${tokenSymbol}) has been deployed and initial buys distributed across ${walletCount} wallets`,
+        type: 'error',
+        title: 'Failed to Create Token',
+        description: error instanceof Error ? error.message : 'An unexpected error occurred',
       });
-    }, 3000);
+    }
   };
 
   const calculateWalletAmounts = () => {
@@ -124,78 +266,115 @@ export default function TokenPage() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        {/* Success State */}
-        {launchComplete && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="max-w-2xl mx-auto text-center py-12"
-          >
-            <div className="mb-8">
-              <div className="w-24 h-24 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Rocket className="w-12 h-12 text-green-500" />
-              </div>
-              <h2 className="text-3xl font-bold mb-4">Token Created! 🎉</h2>
-              <p className="text-lg text-muted-foreground mb-8">
-                Your token {tokenName} ({tokenSymbol}) has been deployed on {platform === 'pumpfun' ? 'PumpFun' : 'LaunchLab'} 
-                and initial buys have been distributed across {walletCount} wallets. You're now ready to manage your launch!
-              </p>
-            </div>
-            
-            <div className="grid gap-4 mb-8">
-              <Card className="bg-boost-subtle">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Token Created</span>
-                  <span className="font-medium">{tokenName} ({tokenSymbol})</span>
-                </div>
-              </Card>
-              <Card className="bg-boost-subtle">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Platform</span>
-                  <span className="font-medium">{platform === 'pumpfun' ? 'PumpFun' : 'LaunchLab'}</span>
-                </div>
-              </Card>
-              <Card className="bg-boost-subtle">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Wallets Created</span>
-                  <span className="font-medium">{walletCount} wallets</span>
-                </div>
-              </Card>
-              <Card className="bg-boost-subtle">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground">Total Investment</span>
-                  <span className="font-medium">{totalBuyAmount} SOL</span>
-                </div>
-              </Card>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/manage-wallets">
-                <Button size="lg" className="boost-glow">
-                  <Users className="w-5 h-5 mr-2" />
-                  Manage Your Wallets
-                </Button>
-              </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => {
-                  setLaunchComplete(false);
-                  setTokenName('');
-                  setTokenSymbol('');
-                  setTokenDescription('');
-                  setTotalBuyAmount('');
-                }}
+            {/* Progress Modal - Show when processing */}
+            {isProcessing && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
               >
-                Create Another Token
-              </Button>
-            </div>
-          </motion.div>
-        )}
+                <motion.div
+                  initial={{ scale: 0.9, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="bg-card border border-border rounded-xl p-8 max-w-lg w-full shadow-2xl"
+                >
+                  <h3 className="text-2xl font-bold mb-6 text-center">Creating Your Token</h3>
+                  
+                  <div className="space-y-6">
+                    {/* Step 1: SOL Distribution */}
+                    <div className={`flex items-start gap-4 ${currentStep >= 1 ? 'opacity-100' : 'opacity-50'}`}>
+                      <div className="relative">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                          progressStatus.solDistribution.status === 'completed' 
+                            ? 'bg-green-500 border-green-500' 
+                            : progressStatus.solDistribution.status === 'processing'
+                            ? 'bg-primary border-primary animate-pulse'
+                            : 'bg-muted border-border'
+                        }`}>
+                          {progressStatus.solDistribution.status === 'completed' ? (
+                            <CheckCircle2 className="w-5 h-5 text-white" />
+                          ) : progressStatus.solDistribution.status === 'processing' ? (
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                            <span className="text-sm font-medium">1</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold">SOL Distribution</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {progressStatus.solDistribution.message || 'Distributing SOL to wallets with bubble map avoidance'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Step 2: Metadata Upload */}
+                    <div className={`flex items-start gap-4 ${currentStep >= 2 ? 'opacity-100' : 'opacity-50'}`}>
+                      <div className="relative">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                          progressStatus.metadataUpload.status === 'completed' 
+                            ? 'bg-green-500 border-green-500' 
+                            : progressStatus.metadataUpload.status === 'processing'
+                            ? 'bg-primary border-primary animate-pulse'
+                            : 'bg-muted border-border'
+                        }`}>
+                          {progressStatus.metadataUpload.status === 'completed' ? (
+                            <CheckCircle2 className="w-5 h-5 text-white" />
+                          ) : progressStatus.metadataUpload.status === 'processing' ? (
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                            <span className="text-sm font-medium">2</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold">Token Metadata Upload</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {progressStatus.metadataUpload.message || 'Uploading token metadata to IPFS'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Step 3: Bundler Sending */}
+                    <div className={`flex items-start gap-4 ${currentStep >= 3 ? 'opacity-100' : 'opacity-50'}`}>
+                      <div className="relative">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                          progressStatus.bundlerSending.status === 'completed' 
+                            ? 'bg-green-500 border-green-500' 
+                            : progressStatus.bundlerSending.status === 'processing'
+                            ? 'bg-primary border-primary animate-pulse'
+                            : 'bg-muted border-border'
+                        }`}>
+                          {progressStatus.bundlerSending.status === 'completed' ? (
+                            <CheckCircle2 className="w-5 h-5 text-white" />
+                          ) : progressStatus.bundlerSending.status === 'processing' ? (
+                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          ) : (
+                            <span className="text-sm font-medium">3</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold">Sending Bundle</h4>
+                        <p className="text-sm text-muted-foreground">
+                          {progressStatus.bundlerSending.message || 'Creating token and executing bundle transactions'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-8 text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Please wait while we process your request...
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      You can safely refresh this page - your progress will be saved.
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
 
-        {/* Main Content - Hidden when launch is complete */}
-        {!launchComplete && (
-          <>
             {/* Hero Header */}
             <motion.div {...fadeInUp} className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
@@ -389,21 +568,6 @@ export default function TokenPage() {
                     maxLength={10}
                   />
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Total Supply
-                  </label>
-                  <Input
-                    type="number"
-                    value={tokenSupply}
-                    onChange={(e) => setTokenSupply(e.target.value)}
-                    placeholder="1000000000"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    {platform === 'pumpfun' ? 'PumpFun uses 1B supply by default' : 'LaunchLab allows custom supply'}
-                  </p>
-                </div>
               </div>
               
               <div className="space-y-4">
@@ -422,13 +586,42 @@ export default function TokenPage() {
                 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Token Image URL
+                    Token Image
                   </label>
-                  <Input
-                    value={tokenImage}
-                    onChange={(e) => setTokenImage(e.target.value)}
-                    placeholder="https://..."
-                  />
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-4">
+                      <label
+                        htmlFor="token-image-upload"
+                        className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors cursor-pointer"
+                      >
+                        <Upload className="w-4 h-4" />
+                        Choose File
+                      </label>
+                      <input
+                        id="token-image-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      {tokenImageFile && (
+                        <span className="text-sm text-muted-foreground">
+                          {tokenImageFile.name}
+                        </span>
+                      )}
+                    </div>
+                    
+                    {tokenImagePreview && (
+                      <div className="mt-3">
+                        <p className="text-xs text-muted-foreground mb-2">Preview:</p>
+                        <img
+                          src={tokenImagePreview}
+                          alt="Token preview"
+                          className="w-20 h-20 rounded-lg object-cover border border-border"
+                        />
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -707,50 +900,6 @@ export default function TokenPage() {
             </div>
           </Card>
         </motion.div>
-
-        {/* Educational Tips */}
-        <motion.div {...fadeInUp} transition={{ delay: 0.5 }}>
-          <h3 className="text-xl font-semibold mb-4">Platform Tips</h3>
-          <div className="grid gap-4 md:grid-cols-3">
-            <Card className="bg-primary/5 border-primary/20">
-              <div className="flex gap-3">
-                <Users className="w-8 h-8 text-primary flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1">PumpFun Strategy</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Start with 2-5 SOL distributed across 10-15 wallets for best initial momentum.
-                  </p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="bg-secondary/5 border-secondary/20">
-              <div className="flex gap-3">
-                <TrendingUp className="w-8 h-8 text-secondary flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1">LaunchLab Benefits</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Built-in marketing tools and analytics make it easier to grow your community.
-                  </p>
-                </div>
-              </div>
-            </Card>
-            
-            <Card className="bg-accent/5 border-accent/20">
-              <div className="flex gap-3">
-                <Settings className="w-8 h-8 text-accent flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold mb-1">Bundle Smart</h4>
-                  <p className="text-sm text-muted-foreground">
-                    Random distribution creates more natural-looking early trading activity.
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </motion.div>
-          </>
-        )}
       </div>
     </DashboardLayout>
   );
