@@ -202,7 +202,7 @@ export default function ManageWalletsPage() {
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">Bundle Manager</h1>
+            <h1 className="text-2xl font-bold">⚡ Bundle Manager</h1>
             <div className="px-3 py-1 bg-muted rounded-lg">
               <span className="text-sm font-medium">{tokenInfo.symbol}</span>
             </div>
