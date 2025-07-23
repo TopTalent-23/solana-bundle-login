@@ -275,9 +275,9 @@ export default function ManageWalletsPage() {
 
             {/* Improved Trade Box */}
             <Card className="bg-muted/30 border-muted">
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {/* Swap Section */}
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-semibold">Quick Trade</h3>
                     <div className="text-xs text-muted-foreground">
@@ -285,45 +285,41 @@ export default function ManageWalletsPage() {
                     </div>
                   </div>
                   
-                  {/* From/To Display */}
-                  <div className="space-y-2">
-                    <div className="bg-background/50 rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-muted-foreground">From</span>
-                        <span className="text-xs text-muted-foreground">Balance: {hideBalances ? '••••' : '0.06'}</span>
+                  {/* From/To Display - More Compact */}
+                  <div className="space-y-1">
+                    <div className="bg-background/50 rounded-lg p-2">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                        <span>From</span>
+                        <span>Balance: {hideBalances ? '••••' : '0.06'}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <Input 
                           type="number"
                           placeholder="0.0"
-                          className="bg-transparent border-0 text-lg font-medium p-0 h-auto focus:ring-0"
+                          className="bg-transparent border-0 text-base font-medium p-0 h-auto focus:ring-0 w-24"
                           value={buyAmount}
                           onChange={(e) => setBuyAmount(e.target.value)}
                         />
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">SOL</span>
-                        </div>
+                        <span className="text-sm font-medium">SOL</span>
                       </div>
                     </div>
                     
-                    <div className="flex justify-center">
-                      <div className="w-8 h-8 bg-muted rounded-full flex items-center justify-center">
-                        <ArrowDownRight className="w-4 h-4" />
+                    <div className="flex justify-center py-1">
+                      <div className="w-6 h-6 bg-muted rounded-full flex items-center justify-center">
+                        <ArrowDownRight className="w-3 h-3" />
                       </div>
                     </div>
                     
-                    <div className="bg-background/50 rounded-lg p-3">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs text-muted-foreground">To (Estimated)</span>
-                        <span className="text-xs text-muted-foreground">Balance: {hideBalances ? '••••' : tokenInfo.tokenBalance.toFixed(4)}</span>
+                    <div className="bg-background/50 rounded-lg p-2">
+                      <div className="flex items-center justify-between text-xs text-muted-foreground mb-1">
+                        <span>To (Estimated)</span>
+                        <span>Balance: {hideBalances ? '••••' : tokenInfo.tokenBalance.toFixed(4)}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-lg font-medium text-muted-foreground">
+                        <span className="text-base font-medium text-muted-foreground">
                           {buyAmount ? (parseFloat(buyAmount) * tokenInfo.price * 1000).toFixed(2) : '0.0'}
                         </span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium">{tokenInfo.symbol}</span>
-                        </div>
+                        <span className="text-sm font-medium">{tokenInfo.symbol}</span>
                       </div>
                     </div>
                   </div>
@@ -331,26 +327,25 @@ export default function ManageWalletsPage() {
                   {/* Swap Button */}
                   <Button 
                     size="sm" 
-                    className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-medium"
+                    className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-medium h-8"
                   >
                     Swap
                   </Button>
                 </div>
                 
                 {/* Quick Buy/Sell */}
-                <div className="border-t border-border pt-4">
-                  <p className="text-xs text-muted-foreground mb-2">Quick Actions</p>
+                <div className="border-t border-border pt-3">
                   <div className="grid grid-cols-2 gap-2">
                     <Button 
                       size="sm" 
-                      className="bg-green-600/20 hover:bg-green-600/30 text-green-600 border border-green-600/50"
+                      className="bg-green-600/20 hover:bg-green-600/30 text-green-600 border border-green-600/50 h-8 text-xs"
                       onClick={handleBuy}
                     >
                       Buy
                     </Button>
                     <Button 
                       size="sm" 
-                      className="bg-red-600/20 hover:bg-red-600/30 text-red-600 border border-red-600/50"
+                      className="bg-red-600/20 hover:bg-red-600/30 text-red-600 border border-red-600/50 h-8 text-xs"
                       onClick={handleSell}
                     >
                       Sell
@@ -360,10 +355,10 @@ export default function ManageWalletsPage() {
               </div>
             </Card>
 
-            {/* Bundler Wallet Management */}
-            <Card>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
+            {/* Bundler Wallet Management - Increased Height */}
+            <Card className="flex-1 flex flex-col min-h-0">
+              <div className="flex flex-col h-full space-y-3">
+                <div className="flex items-center justify-between flex-shrink-0">
                   <div>
                     <h3 className="font-semibold">Sub-Wallet Manager</h3>
                     <p className="text-xs text-muted-foreground">Control your bundle distribution</p>
@@ -374,7 +369,7 @@ export default function ManageWalletsPage() {
                   </Tooltip>
                 </div>
                 
-                <div className="bg-muted/50 rounded-lg p-2 text-sm">
+                <div className="bg-muted/50 rounded-lg p-2 text-sm flex-shrink-0">
                   <div className="flex justify-between mb-1">
                     <span className="text-muted-foreground">Total Token Balance:</span>
                     <span className="font-medium">{hideBalances ? '••••' : tokenInfo.tokenBalance.toFixed(4)} {tokenInfo.symbol}</span>
@@ -385,7 +380,7 @@ export default function ManageWalletsPage() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-shrink-0">
                   <Tooltip content="Add new sub-wallet">
                     <Button size="sm" variant="outline" className="flex-1">
                       <Plus className="w-3 h-3 mr-1" />
@@ -408,64 +403,68 @@ export default function ManageWalletsPage() {
                   </Tooltip>
                 </div>
 
-                <div className="space-y-1 max-h-64 overflow-y-auto border rounded-lg">
-                  <div className="flex items-center justify-between py-2 px-3 text-xs text-muted-foreground border-b border-border bg-muted/30 sticky top-0">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={selectedWallets.size === subWallets.length}
-                        onChange={handleSelectAll}
-                        className="rounded"
-                      />
-                      <span>#</span>
-                      <span>Address</span>
-                    </div>
-                    <div className="flex gap-4">
-                      <span className="w-16 text-right">Tokens</span>
-                      <span className="w-16 text-right">Value</span>
-                      <span className="w-16 text-right">SOL</span>
-                    </div>
-                  </div>
-                  
-                  {subWallets.map((wallet, index) => (
-                    <div
-                      key={wallet.id}
-                      className={`flex items-center justify-between py-2 px-3 text-sm cursor-pointer hover:bg-muted/50 transition-colors ${
-                        selectedWallets.has(wallet.id) ? 'bg-primary/10' : ''
-                      }`}
-                      onClick={() => handleSelectWallet(wallet.id)}
-                    >
+                <div className="flex-1 overflow-y-auto border rounded-lg min-h-0">
+                  <div className="sticky top-0 z-10">
+                    <div className="flex items-center justify-between py-2 px-3 text-xs text-muted-foreground border-b border-border bg-muted/30">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
-                          checked={selectedWallets.has(wallet.id)}
-                          onChange={() => {}}
+                          checked={selectedWallets.size === subWallets.length}
+                          onChange={handleSelectAll}
                           className="rounded"
-                          onClick={(e) => e.stopPropagation()}
                         />
-                        <span className="text-muted-foreground w-4">{index + 1}</span>
-                        <span className="font-mono text-xs">{wallet.address}</span>
-                        <Tooltip content="Copy address">
-                          <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity" 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyAddress(wallet.address);
-                            }} />
-                        </Tooltip>
+                        <span>#</span>
+                        <span>Address</span>
                       </div>
-                      <div className="flex gap-4 items-center">
-                        <span className="text-orange-500 w-16 text-right">{hideBalances ? '••' : wallet.tokenBalance.toFixed(4)}</span>
-                        <span className="text-orange-500 w-16 text-right">
-                          ${hideBalances ? '••' : (wallet.tokenValue || 0).toFixed(2)}
-                        </span>
-                        <span className="w-16 text-right">{hideBalances ? '••' : wallet.solBalance.toFixed(4)}</span>
+                      <div className="flex gap-4">
+                        <span className="w-16 text-right">Tokens</span>
+                        <span className="w-16 text-right">Value</span>
+                        <span className="w-16 text-right">SOL</span>
                       </div>
                     </div>
-                  ))}
+                  </div>
+                  
+                  <div className="divide-y divide-border">
+                    {subWallets.map((wallet, index) => (
+                      <div
+                        key={wallet.id}
+                        className={`flex items-center justify-between py-2 px-3 text-sm cursor-pointer hover:bg-muted/50 transition-colors ${
+                          selectedWallets.has(wallet.id) ? 'bg-primary/10' : ''
+                        }`}
+                        onClick={() => handleSelectWallet(wallet.id)}
+                      >
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            checked={selectedWallets.has(wallet.id)}
+                            onChange={() => {}}
+                            className="rounded"
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                          <span className="text-muted-foreground w-4">{index + 1}</span>
+                          <span className="font-mono text-xs">{wallet.address}</span>
+                          <Tooltip content="Copy address">
+                            <Copy className="w-3 h-3 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity" 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyAddress(wallet.address);
+                              }} />
+                          </Tooltip>
+                        </div>
+                        <div className="flex gap-4 items-center">
+                          <span className="text-orange-500 w-16 text-right">{hideBalances ? '••' : wallet.tokenBalance.toFixed(4)}</span>
+                          <span className="text-orange-500 w-16 text-right">
+                            ${hideBalances ? '••' : (wallet.tokenValue || 0).toFixed(2)}
+                          </span>
+                          <span className="w-16 text-right">{hideBalances ? '••' : wallet.solBalance.toFixed(4)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 
                 {selectedWallets.size > 0 && (
-                  <div className="text-xs text-muted-foreground text-center">
+                  <div className="text-xs text-muted-foreground text-center flex-shrink-0">
                     {selectedWallets.size} wallet{selectedWallets.size > 1 ? 's' : ''} selected
                   </div>
                 )}
@@ -475,14 +474,14 @@ export default function ManageWalletsPage() {
 
           {/* Right Panel */}
           <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-            {/* Chart Area */}
+            {/* Chart Area - Reduced Height */}
             {showChart && (
-              <Card className="h-96 bg-muted/30">
+              <Card className="h-64 bg-muted/30">
                 <div className="h-full flex items-center justify-center">
                   <div className="text-center text-muted-foreground">
-                    <BarChart3 className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <p className="text-lg font-medium">TradingView Chart</p>
-                    <p className="text-sm">Chart integration coming soon</p>
+                    <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                    <p className="text-base font-medium">TradingView Chart</p>
+                    <p className="text-xs">Chart integration coming soon</p>
                   </div>
                 </div>
               </Card>

@@ -17,6 +17,7 @@ import {
   Sparkles,
   HelpCircle,
   ChevronRight,
+  ChevronLeft,
   Rocket,
   Zap,
   Users,
@@ -47,14 +48,27 @@ interface DashboardLayoutProps {
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
       {/* Desktop Sidebar */}
-      <aside className="hidden lg:flex lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+      <aside className={`hidden lg:flex lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:flex-col transition-all duration-300 ${
+        sidebarCollapsed ? 'lg:w-16' : 'lg:w-72'
+      }`}>
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-border bg-card px-6 pb-4">
-          <div className="flex h-16 shrink-0 items-center">
-            <Logo size="lg" />
+          <div className="flex h-16 shrink-0 items-center justify-between">
+            {!sidebarCollapsed && <Logo size="lg" />}
+            <button
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+            >
+              {sidebarCollapsed ? (
+                <ChevronRight className="w-5 h-5" />
+              ) : (
+                <ChevronLeft className="w-5 h-5" />
+              )}
+            </button>
           </div>
           
           <nav className="flex flex-1 flex-col">
@@ -77,9 +91,13 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                             `}
                           >
                             <item.icon className="h-5 w-5 shrink-0" />
-                            {item.label}
-                            {item.highlight && (
-                              <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                            {!sidebarCollapsed && (
+                              <>
+                                {item.label}
+                                {item.highlight && (
+                                  <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                                )}
+                              </>
                             )}
                           </div>
                         ) : (
@@ -95,14 +113,19 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                               }
                             `}
+                            title={sidebarCollapsed ? item.label : undefined}
                           >
                             <item.icon className="h-5 w-5 shrink-0" />
-                            {item.label}
-                            {item.highlight && !isActive && (
-                              <Zap className="ml-auto h-4 w-4 text-secondary-400" />
-                            )}
-                            {isActive && (
-                              <ChevronRight className="ml-auto h-5 w-5" />
+                            {!sidebarCollapsed && (
+                              <>
+                                {item.label}
+                                {item.highlight && !isActive && (
+                                  <Zap className="ml-auto h-4 w-4 text-secondary-400" />
+                                )}
+                                {isActive && (
+                                  <ChevronRight className="ml-auto h-5 w-5" />
+                                )}
+                              </>
                             )}
                           </Link>
                         )}
@@ -116,9 +139,10 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
                 <Link
                   href="/settings"
                   className="group -mx-2 flex gap-x-3 rounded-lg p-3 text-sm font-medium leading-6 text-muted-foreground hover:bg-muted hover:text-foreground transition-all duration-200"
+                  title={sidebarCollapsed ? 'Settings' : undefined}
                 >
                   <Settings className="h-5 w-5 shrink-0" />
-                  Settings
+                  {!sidebarCollapsed && 'Settings'}
                 </Link>
               </li>
             </ul>
@@ -236,7 +260,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <div className="lg:pl-72">
+      <div className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-72'}`}>
         {/* Desktop Header */}
         <header className="hidden lg:flex h-16 items-center justify-between border-b border-border bg-card px-8">
           <h1 className="text-2xl font-semibold font-heading">
