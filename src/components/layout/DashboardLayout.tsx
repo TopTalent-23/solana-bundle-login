@@ -34,7 +34,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: '/manage-wallets', label: 'Manage Launch Wallets', icon: Users },
+  { href: '/manage-wallets', label: 'Bundle Manager', icon: Users },
   { href: '/token', label: 'Create Token & Bundle', icon: Coins, highlight: true },
   { href: '/projects', label: 'My Projects', icon: Package },
   { href: '/learn', label: 'Learn', icon: BookOpen },
