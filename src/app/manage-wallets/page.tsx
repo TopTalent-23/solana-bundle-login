@@ -244,7 +244,7 @@ export default function ManageWalletsPage() {
         {/* Main Content */}
         <div className="flex flex-col lg:flex-row h-[calc(100vh-8rem)]">
           {/* Left Panel */}
-          <div className="w-full lg:w-96 border-r border-border p-4 space-y-4 overflow-y-auto">
+          <div className="w-full lg:w-[480px] border-r border-border p-4 space-y-4 overflow-y-auto">
             {/* Active Wallet */}
             <Card className="bg-muted/50">
               <div className="space-y-3">
