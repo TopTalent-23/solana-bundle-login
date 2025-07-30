@@ -38,7 +38,7 @@ export const TelegramAuth: React.FC = () => {
   const verifySessionToken = async (sessionToken: string) => {
     setLoading(true);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BOT_API_URL || 'http://localhost:3001'}/api/auth/verify-session`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BOT_API_URL || process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/api/auth/verify-session`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ export const TelegramAuth: React.FC = () => {
     window.onTelegramAuth = async (telegramUser: any) => {
       setLoading(true);
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BOT_API_URL || 'http://localhost:3001'}/api/auth/telegram`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BOT_API_URL || process.env.NEXT_PUBLIC_APP_URL || window.location.origin}/api/auth/telegram`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
