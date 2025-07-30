@@ -1,89 +1,84 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { 
-  WalletState, 
   ToastMessage, 
   UserSettings, 
   Bundle, 
   Transaction,
   Token,
-  LiquidityPosition 
+  LiquidityPosition,
+  TelegramUser 
 } from '@/types';
 
-// Wallet Store
-interface WalletStore extends WalletState {
-  connect: () => Promise<void>;
-  disconnect: () => void;
-  updateBalance: () => Promise<void>;
-  addTransaction: (transaction: Transaction) => void;
+interface AuthStore {
+  user: TelegramUser | null;
+  token: string | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  
+  setAuth: (user: TelegramUser, token: string) => void;
+  clearAuth: () => void;
+  setLoading: (loading: boolean) => void;
 }
 
-export const useWalletStore = create<WalletStore>((set) => ({
+export const useAuthStore = create(
+  persist<AuthStore>(
+    (set) => ({
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
+      
+      setAuth: (user, token) => {
+        set({ 
+          user, 
+          token, 
+          isAuthenticated: true,
+          isLoading: false 
+        });
+        // Store token in localStorage for API requests
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('authToken', token);
+        }
+      },
+      
+      clearAuth: () => {
+        set({ 
+          user: null, 
+          token: null, 
+          isAuthenticated: false,
+          isLoading: false 
+        });
+        // Remove token from localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('authToken');
+        }
+      },
+      
+      setLoading: (loading) => {
+        set({ isLoading: loading });
+      },
+    }),
+    {
+      name: 'telegram-auth-storage',
+      partialize: (state) => ({ 
+        user: state.user, 
+        token: state.token,
+        isAuthenticated: state.isAuthenticated 
+      } as any)
+    }
+  )
+);
+
+// Mock wallet store for compatibility (will be removed later)
+export const useWalletStore = create(() => ({
   connected: false,
   tokens: [],
   transactions: [],
-  
-  connect: async () => {
-    // Mock wallet connection
-    set({
-      connected: true,
-      address: '7xKXtg2CW87d9...TxKQa3mz',
-      balance: '10.5',
-      tokens: [
-        {
-          address: 'So11111111111111111111111111111111111111112',
-          symbol: 'SOL',
-          name: 'Solana',
-          decimals: 9,
-          logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
-          balance: '10.5',
-          price: 40,
-          value: 420,
-        },
-        {
-          address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
-          symbol: 'USDC',
-          name: 'USD Coin',
-          decimals: 6,
-          logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
-          balance: '500',
-          price: 1,
-          value: 500,
-        },
-        {
-          address: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-          symbol: 'BONK',
-          name: 'Bonk',
-          decimals: 5,
-          logoURI: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I',
-          balance: '10000',
-          price: 0.000015,
-          value: 0.15,
-        }
-      ]
-    });
-  },
-  
-  disconnect: () => {
-    set({
-      connected: false,
-      address: undefined,
-      balance: undefined,
-      tokens: [],
-      transactions: [],
-    });
-  },
-  
-  updateBalance: async () => {
-    // Mock balance update
-    console.log('Updating balance...');
-  },
-  
-  addTransaction: (transaction) => {
-    set((state) => ({
-      transactions: [transaction, ...state.transactions],
-    }));
-  },
+  connect: async () => {},
+  disconnect: () => {},
+  updateBalance: async () => {},
+  addTransaction: () => {},
 }));
 
 // UI Store

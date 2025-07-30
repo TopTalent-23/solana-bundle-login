@@ -22,10 +22,8 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Tooltip } from '@/components/ui/Tooltip';
 import Logo from '@/components/Logo';
-import { useUIStore, useLiquidityStore } from '@/store';
+import { useUIStore, useLiquidityStore, useAuthStore } from '@/store';
 import { formatCurrency, formatTokenAmount, formatRelativeTime } from '@/utils/format';
-import { useWalletBalance } from '@/hooks/useWalletBalance';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -33,41 +31,34 @@ const fadeInUp = {
 };
 
 export default function DashboardPage() {
-  const { connected, tokens, balance } = useWalletBalance();
+  const { user, isAuthenticated } = useAuthStore();
   const { showTutorial, setShowTutorial } = useUIStore();
   const { positions } = useLiquidityStore();
-  const { setVisible } = useWalletModal();
   const transactions: any[] = []; // Mock transactions for now
 
-  const totalBalance = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
+  // Mock data for demonstration
+  const totalBalance = 1250.50;
   const totalLiquidityValue = positions.reduce((sum, pos) => sum + parseFloat(pos.value), 0);
 
   useEffect(() => {
-    if (showTutorial && connected) {
+    if (showTutorial && isAuthenticated) {
       // Show tutorial for first-time users
       // This would trigger a tutorial overlay
     }
-  }, [showTutorial, connected]);
+  }, [showTutorial, isAuthenticated]);
 
-  if (!connected) {
+  if (!isAuthenticated) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-center max-w-md"
+            className="text-center"
           >
-            <div className="mb-6">
-              <Logo size="lg" className="justify-center" />
-            </div>
-            <h2 className="text-3xl font-bold font-heading mb-4">Welcome to Boost Legends!</h2>
-            <p className="text-muted-foreground mb-8">
-              Connect your wallet to launch your token like a legend. Create liquidity and secure your supply before anyone else.
+            <p className="text-muted-foreground">
+              Loading authentication...
             </p>
-            <Button size="lg" onClick={() => setVisible(true)}>
-              Connect Wallet to Get Started
-            </Button>
           </motion.div>
         </div>
       </DashboardLayout>
@@ -84,7 +75,7 @@ export default function DashboardPage() {
             className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-2xl p-6 relative overflow-hidden"
           >
             <div className="relative z-10">
-              <h2 className="text-2xl font-bold mb-2">Welcome back! 👋</h2>
+              <h2 className="text-2xl font-bold mb-2">Welcome back, {user?.firstName}! 👋</h2>
               <p className="text-muted-foreground mb-4">
                 Let's start with the basics. Would you like a quick tour?
               </p>
@@ -144,9 +135,9 @@ export default function DashboardPage() {
                 <span className="text-sm text-muted-foreground">SOL Balance</span>
                 <Tooltip content="Your Solana balance" />
               </div>
-              <p className="text-3xl font-bold">{formatTokenAmount(balance || '0')} SOL</p>
+              <p className="text-3xl font-bold">10.5 SOL</p>
               <p className="text-sm text-muted-foreground mt-2">
-                ≈ {formatCurrency((parseFloat(balance || '0') * 40).toString())}
+                ≈ {formatCurrency('420')}
               </p>
             </Card>
           </motion.div>

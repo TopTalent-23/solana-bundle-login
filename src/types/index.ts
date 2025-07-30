@@ -81,13 +81,13 @@ export interface LiquidityPosition {
   createdAt: Date;
 }
 
-// Wallet Types
-export interface WalletState {
-  connected: boolean;
-  address?: string;
-  balance?: string;
-  tokens: Token[];
-  transactions: Transaction[];
+// Auth Types
+export interface TelegramUser {
+  id: string;
+  firstName: string;
+  lastName?: string;
+  username?: string;
+  photoUrl?: string;
 }
 
 // UI Types

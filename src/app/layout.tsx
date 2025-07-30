@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ToastContainer } from "@/components/ui/Toast";
-import AppWalletProvider from "@/providers/AppWalletProvider";
+
 
 export const metadata: Metadata = {
   title: "Solana Bundler - Bundle Your Transactions Like a Pro",
@@ -37,10 +37,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased min-h-screen bg-background">
-        <AppWalletProvider>
-          {children}
-          <ToastContainer />
-        </AppWalletProvider>
+        {children}
+        <ToastContainer />
       </body>
     </html>
   );

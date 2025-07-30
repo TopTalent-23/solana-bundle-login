@@ -24,7 +24,7 @@ import {
   Coins,
 } from 'lucide-react';
 import Logo from '@/components/Logo';
-import WalletConnection from '@/components/wallet/WalletConnection';
+import { TelegramAuth } from '@/components/auth/TelegramAuth';
 
 interface NavItem {
   href: string;
@@ -163,7 +163,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         <div className="flex flex-1 items-center justify-between">
           <Logo size="md" />
           
-          <WalletConnection />
+          <TelegramAuth />
         </div>
       </div>
 
@@ -272,7 +272,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               <HelpCircle className="w-5 h-5" />
             </button>
             
-            <WalletConnection />
+            <TelegramAuth />
           </div>
         </header>
 
