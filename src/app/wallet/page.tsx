@@ -18,10 +18,8 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { useWalletBalance } from '@/hooks/useWalletBalance';
 import { formatCurrency, formatTokenAmount, formatPercentage, shortenAddress } from '@/utils/format';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { useWalletModal } from '@solana/wallet-adapter-react-ui';
+import { useAuthStore } from '@/store';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -29,27 +27,51 @@ const fadeInUp = {
 };
 
 export default function WalletPage() {
-  const { connected, tokens, balance, address, loading } = useWalletBalance();
-  const { setVisible } = useWalletModal();
+  const { user, isAuthenticated } = useAuthStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const totalBalance = tokens.reduce((sum, token) => sum + (token.value || 0), 0);
+  // Mock data for now - replace with real wallet integration later
+  const mockTokens = [
+    {
+      address: 'So11111111111111111111111111111111111111112',
+      symbol: 'SOL',
+      name: 'Solana',
+      decimals: 9,
+      logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+      balance: '10.5',
+      price: 95.42,
+      value: 1001.91,
+    },
+    {
+      address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+      symbol: 'USDC',
+      name: 'USD Coin',
+      decimals: 6,
+      logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png',
+      balance: '250.00',
+      price: 1.00,
+      value: 250.00,
+    }
+  ];
 
-  const filteredTokens = tokens.filter(token =>
+  const totalBalance = mockTokens.reduce((sum, token) => sum + (token.value || 0), 0);
+  const mockAddress = '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU';
+
+  const filteredTokens = mockTokens.filter(token =>
     token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
     token.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleCopyAddress = () => {
-    if (address) {
-      navigator.clipboard.writeText(address);
+    if (mockAddress) {
+      navigator.clipboard.writeText(mockAddress);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  if (!connected) {
+  if (!isAuthenticated) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center min-h-[60vh]">
@@ -61,12 +83,12 @@ export default function WalletPage() {
             <div className="mb-6">
               <Wallet className="w-16 h-16 text-muted-foreground mx-auto" />
             </div>
-            <h2 className="text-3xl font-bold font-heading mb-4">Connect Your Wallet</h2>
+            <h2 className="text-3xl font-bold font-heading mb-4">Login Required</h2>
             <p className="text-muted-foreground mb-8">
-              Connect your wallet to view your token balances and manage your assets.
+              Please login with Telegram to view your wallet and manage your assets.
             </p>
-            <Button size="lg" onClick={() => setVisible(true)}>
-              Connect Wallet
+            <Button size="lg" onClick={() => window.location.href = '/login'}>
+              Login with Telegram
             </Button>
           </motion.div>
         </div>
@@ -86,7 +108,7 @@ export default function WalletPage() {
                 <p className="text-muted-foreground">Total Portfolio Value</p>
                 <div className="flex items-center gap-2 mt-3">
                   <code className="text-sm bg-muted px-2 py-1 rounded">
-                    {shortenAddress(address!, 6)}
+                    {shortenAddress(mockAddress, 6)}
                   </code>
                   <button
                     onClick={handleCopyAddress}
@@ -136,10 +158,10 @@ export default function WalletPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">Total Assets</p>
-                <p className="text-2xl font-bold">{tokens.length}</p>
+                <p className="text-2xl font-bold">{mockTokens.length}</p>
               </div>
               <div className="flex -space-x-2">
-                {tokens.slice(0, 3).map((token, i) => (
+                {mockTokens.slice(0, 3).map((token, i) => (
                   <img
                     key={token.address}
                     src={token.logoURI}
@@ -156,7 +178,7 @@ export default function WalletPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground mb-1">SOL Balance</p>
-                <p className="text-2xl font-bold">{formatTokenAmount(balance || '0')}</p>
+                <p className="text-2xl font-bold">{formatTokenAmount(mockTokens[0]?.balance || '0')}</p>
               </div>
               <img
                 src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png"
