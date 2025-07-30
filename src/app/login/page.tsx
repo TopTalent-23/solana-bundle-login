@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, MessageCircle, Shield, Zap } from 'lucide-react';
@@ -50,7 +50,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-6">
-              <TelegramAuth />
+              <Suspense fallback={null}><TelegramAuth /></Suspense>
 
               <div className="flex items-center gap-4 text-sm text-muted-foreground">
                 <div className="flex-1 h-px bg-border" />

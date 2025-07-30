@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -163,7 +163,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
         <div className="flex flex-1 items-center justify-between">
           <Logo size="md" />
           
-          <TelegramAuth />
+          <Suspense fallback={null}><TelegramAuth /></Suspense>
         </div>
       </div>
 
@@ -272,7 +272,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
               <HelpCircle className="w-5 h-5" />
             </button>
             
-            <TelegramAuth />
+            <Suspense fallback={null}><TelegramAuth /></Suspense>
           </div>
         </header>
 
