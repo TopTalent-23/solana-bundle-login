@@ -1,0 +1,9 @@
+[33mcommit 7d357d63acd21f49487d4029214a475c5e8b43f8[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: boostlegends <boostlegends1@gmail.com>
+Date:   Wed Jul 30 19:43:31 2025 +0200
+
+    fix: Wrap TelegramAuth in Suspense to satisfy useSearchParams requirement
+
+ src/app/login/page.tsx                    | 4 [32m++[m[31m--[m
+ src/components/layout/DashboardLayout.tsx | 6 [32m+++[m[31m---[m
+ 2 files changed, 5 insertions(+), 5 deletions(-)
