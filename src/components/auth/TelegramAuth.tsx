@@ -59,15 +59,15 @@ export const TelegramAuth: React.FC = () => {
         description: `Welcome, ${data.user.firstName}!`,
       });
 
-      // Remove token from URL
-      router.replace('/');
+      // Redirect to dashboard
+      router.replace('/dashboard');
     } catch (error) {
       addToast({
         type: 'error',
         title: 'Authentication failed',
         description: 'Invalid or expired session',
       });
-      router.replace('/');
+      router.replace('/login');
     } finally {
       setLoading(false);
     }

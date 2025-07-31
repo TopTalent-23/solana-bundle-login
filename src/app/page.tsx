@@ -1,7 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store';
 import { motion } from 'framer-motion';
 import { 
   ArrowRight, 
@@ -26,6 +28,15 @@ const fadeInUp = {
 };
 
 export default function LandingPage() {
+  const router = useRouter();
+  const { isAuthenticated } = useAuthStore();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push('/dashboard');
+    }
+  }, [isAuthenticated, router]);
+
   return (
     <div className="min-h-screen bg-boost-dark">
       {/* Navigation */}
