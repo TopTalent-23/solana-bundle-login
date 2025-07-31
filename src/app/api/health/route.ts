@@ -6,7 +6,7 @@ export async function GET() {
     status: 'ok', 
     timestamp: new Date().toISOString(),
     service: 'Boost Legends API',
-    version: '1.0.2',
+    version: '1.0.3',
     environment: process.env.NODE_ENV || 'development'
   });
 }
