@@ -1,0 +1,5 @@
+[33med98a8d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m fix: disable static prerendering for all client pages to resolve Next.js 15 build errors
+[33m6c6ee0c[m fix: resolve activity page prerendering error by disabling static generation and fixing undefined transactions array
+[33mde0c3d6[m fix: disable bundle page prerender and add missing placeholder store methods to prevent build errors
+[33m8b50bc7[m fix: add placeholder UI, Bundle, Liquidity stores to resolve build import errors
+[33mca59a92[m fix: add autoprefixer dev dependency to resolve Vercel build error
