@@ -1,5 +1,3 @@
-export const runtime = 'nodejs'; // ✅ Force this route to use Node.js runtime
-
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { Keypair } from '@solana/web3.js';
