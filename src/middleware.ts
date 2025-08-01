@@ -27,17 +27,7 @@ export function middleware(request: NextRequest) {
   
   // Get auth token from cookie
   const authCookie = request.cookies.get('telegram-auth-storage');
-  let isAuthenticated = false;
-  
-  if (authCookie) {
-    try {
-      const authData = JSON.parse(authCookie.value);
-      isAuthenticated = authData.state?.isAuthenticated === true;
-    } catch (error) {
-      // Invalid cookie data
-      isAuthenticated = false;
-    }
-  }
+  const isAuthenticated = authCookie && authCookie.value.includes('isAuthenticated":true');
   
   // Redirect to login if accessing protected route without auth
   if (isProtectedRoute && !isAuthenticated) {
